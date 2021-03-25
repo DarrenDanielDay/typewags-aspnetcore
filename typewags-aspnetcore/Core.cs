@@ -346,8 +346,12 @@ namespace DarrenDanielDay.Typeawags
             {
                 foreach (var property in controller.GetProperties())
                 {
-                    ExcludeGetterAndSetterMethods.Add(property.GetGetMethod());
-                    ExcludeGetterAndSetterMethods.Add(property.GetGetMethod());
+                    var getMethod = property.GetGetMethod();
+                    if (getMethod != null)
+                    ExcludeGetterAndSetterMethods.Add(getMethod);
+                    var setMethod = property.GetSetMethod();
+                    if (setMethod != null)
+                    ExcludeGetterAndSetterMethods.Add(setMethod);
                 }
             }
             foreach (var controller in controllers)
