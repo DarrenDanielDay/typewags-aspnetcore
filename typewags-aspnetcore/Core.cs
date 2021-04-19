@@ -333,7 +333,6 @@ namespace DarrenDanielDay.Typeawags
         {
             ProgramAssembly = programAssembly;
         }
-
         public Assembly ProgramAssembly { get; }
         internal TypeDefinitionTracker Tracker;
         internal HashSet<Type> Controllers;
@@ -348,10 +347,10 @@ namespace DarrenDanielDay.Typeawags
                 {
                     var getMethod = property.GetGetMethod();
                     if (getMethod != null)
-                    ExcludeGetterAndSetterMethods.Add(getMethod);
+                        ExcludeGetterAndSetterMethods.Add(getMethod);
                     var setMethod = property.GetSetMethod();
                     if (setMethod != null)
-                    ExcludeGetterAndSetterMethods.Add(setMethod);
+                        ExcludeGetterAndSetterMethods.Add(setMethod);
                 }
             }
             foreach (var controller in controllers)
@@ -359,6 +358,7 @@ namespace DarrenDanielDay.Typeawags
                 var apiMethods = controller.GetMethods().Where(ControllerMethodFilter);
                 foreach (var method in apiMethods)
                 {
+                    if (method.GetCustomAttribute<NonActionAttribute>() != null) continue;
                     foreach (var parameter in method.GetParameters())
                     {
                         Tracker.AddEntryPoint(parameter.ParameterType);
@@ -392,6 +392,7 @@ namespace DarrenDanielDay.Typeawags
                     var responseType = TSClientUtils.UnwrapTaskType(method.ReturnType);
                     var controllerRouteAttribute = controller.GetCustomAttribute<RouteAttribute>();
                     var methodRouteAttribute = method.GetCustomAttribute<RouteAttribute>();
+                    var methodVerbAttribute = method.GetCustomAttribute<HttpMethodAttribute>(true);
                     var requestMethod = WebAPI.GetMethodEnumOf(method);
                     BaseType tsClientResponseType;
                     try
@@ -405,7 +406,7 @@ namespace DarrenDanielDay.Typeawags
 
                     yield return new WebAPI
                     {
-                        Route = $@"/{string.Join('/', PathSplitterRegex.Split(controllerRouteAttribute?.Template?.Replace("[controller]", controller.Name.Replace("Controller", "")) ?? "/").Concat(PathSplitterRegex.Split(methodRouteAttribute?.Template ?? method.Name)))}",
+                        Route = $@"/{string.Join('/', PathSplitterRegex.Split(controllerRouteAttribute?.Template?.Replace("[controller]", controller.Name.Replace("Controller", "")) ?? "/").Concat(PathSplitterRegex.Split(methodRouteAttribute?.Template ?? methodVerbAttribute?.Template ?? method.Name)))}",
                         Parameters = method.GetParameters().Select(parameter => new RequestParameter
                         {
                             Name = parameter.Name,
