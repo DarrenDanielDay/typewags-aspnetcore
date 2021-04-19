@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>typewags_aspnetcore</RootNamespace>
-    <Version>0.2.0</Version>
-    <PackageReleaseNotes>Support NonActionAttribute and route in HttpMethodAttribute.</PackageReleaseNotes>
+    <Version>0.2.1</Version>
+    <PackageReleaseNotes>Fix issue of NonAction.</PackageReleaseNotes>
     <Description>The server side Web API inspector for ASP.NET Core.</Description>
     <RepositoryUrl>https://github.com/DarrenDanielDay/typewags-aspnetcore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

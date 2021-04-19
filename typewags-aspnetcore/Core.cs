@@ -202,11 +202,10 @@ namespace DarrenDanielDay.Typeawags
                     var propertyType = property.PropertyType;
                     if (Tracker.TrackStrategy.ShouldTrack(propertyType) || TSClientUtils.IsCommonType(propertyType))
                     {
-                        yield return new SchemaItem { Key = $@"{Uncapitalize(property.Name)}", Value = Tracker.GetTypeReferenceFor(propertyType) };
+                        yield return new SchemaItem { Key = $@"{property.Name}", Value = Tracker.GetTypeReferenceFor(propertyType) };
                     }
                 }
             }
-            internal string Uncapitalize(string s) => @$"{s.Substring(0, 1).ToLower()}{s.Substring(1)}";
         }
         private class DefaultEnumStrategy : IEnumStrategy
         {
@@ -358,7 +357,6 @@ namespace DarrenDanielDay.Typeawags
                 var apiMethods = controller.GetMethods().Where(ControllerMethodFilter);
                 foreach (var method in apiMethods)
                 {
-                    if (method.GetCustomAttribute<NonActionAttribute>() != null) continue;
                     foreach (var parameter in method.GetParameters())
                     {
                         Tracker.AddEntryPoint(parameter.ParameterType);
@@ -424,7 +422,7 @@ namespace DarrenDanielDay.Typeawags
         {
             { IsAbstract: false, IsStatic: false, IsConstructor: false, IsPublic: true, } when Controllers.Contains(method.DeclaringType) && !ExcludeGetterAndSetterMethods.Contains(method) => true,
             _ => false
-        };
+        } && method.GetCustomAttribute<NonActionAttribute>() == null;
 
         internal Regex PathSplitterRegex = new Regex(@"\\|/");
 
